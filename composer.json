@@ -1,0 +1,37 @@
+{
+    "name": "jelix/jtags-module",
+    "type": "jelix-module",
+    "description": "Jelix module allowing to display count and list of active users of the application",
+    "keywords": ["admin", "module", "jelix", "statistics","users"],
+    "license": "LGPL-2.1-only",
+    "authors": [
+        {
+            "name": "Bastien Jaillot",
+            "email": "bastnicj@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Laurent Jouanneau",
+            "email": "laurent@jelix.org",
+            "homepage": "https://jelix.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "archive": {
+        "exclude": ["/tests"]
+    },
+    "extra": {
+        "jelix" : {
+            "modules" : [
+                "jtags/"
+            ]
+        },
+        "branch-alias": {
+            "dev-master": "0.2.x-dev"
+        }
+    },
+    "minimum-stability": "stable"
+}
