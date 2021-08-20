@@ -1,13 +1,14 @@
 <?php
 /**
-* @package      sharecode
-* @subpackage   jTags
-* @author       Bastien Jaillot
-* @copyright    2008 Bastien Jaillot
-* @link         http://forge.jelix.org/projects/sharecode/
-* @licence      http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
-*
-*/
+ * @package      sharecode
+ * @subpackage   jTags
+ * @author       Bastien Jaillot
+ * @contributor  Laurent Jouanneau
+ * @copyright    2008 Bastien Jaillot, 2021 Laurent Jouanneau
+ * @link         https://github.com/jelix/jtags-module
+ * @licence      http://www.gnu.org/licenses/lgpl.html GNU Lesser General Public Licence, see LICENCE file
+ *
+ */
 
 class tags {
 
@@ -135,30 +136,21 @@ class tags {
         return array_keys($ttags_cnter, $tags_cnter);
     }
 
-    function setResponsesHeaders() {
-        $gJCoord = jApp::coord();
-        $gJCoord->response->addCSSLink('/js/jquery-autocomplete/jquery.autocomplete.css');
+    /**
+     * @param  jResponseHtml $response
+     */
+    function setResponsesHeaders($response = null)
+    {
+        if ($response == null) {
+            $response = jApp::coord()->response;
+        }
 
-        $gJCoord->response->addJSLink("/js/jquery-autocomplete/jquery.autocomplete.pack.js");
-        $gJCoord->response->addJSLink('/js/jquery-autocomplete/jquery.autocomplete.pack.js');
-        $gJCoord->response->addJSLink('/js/jquery-autocomplete/lib/jquery.bgiframe.min.js');
-        $gJCoord->response->addJSLink('/js/jquery-autocomplete/lib/jquery.ajaxQueue.js');
-        $gJCoord->response->addJSLink('/js/jquery-autocomplete/lib/jquery.dimensions.js');
-
+        $response->addAssets('jquery_ui');
+        $response->addJSLinkModule('jtags', 'jtagsAutocomplete.js');
         $newtags = $this->getJsonAll();
-
-        $gJCoord->response->addJSCode('
-            var tags = '.$newtags.';
-            JQ = jQuery.noConflict(true);
-            JQ(document).ready(function(){
-                JQ("#jform1_tags").autocomplete(tags, {
-                    width: 300,
-                    multiple: true,
-                    matchContains: true
-                });
-            });
-        ');
+        $response->addHeadContent('<script type="json" id="jtags-list">'.$newtags.'</script>');
     }
+
 
     protected function createTag($tag_name) {
         $factory_tags = jDao::get($this->dao_tags);
