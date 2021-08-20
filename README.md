@@ -36,25 +36,89 @@ php install/installer.php
 How to use it
 =============
 
-Adding tags to an object
--------------------------
+All tags are stored into a table. An other table contains the association between a tag, 
+a scope and an id.
+
+A scope is the type of records (a table name for example), or a domain.
+An id is the id of a record inside the scope.
+
+When you store some tags for an object, you give a scope and the id of the object.
+
+For example, for news posts, the scope may be `news`, and the id, the id of a news.
+
+Editing tags within a form
+---------------------------
 
 Add in your jforms:
 
 ```xml
-<textarea ref="tags" rows="2" cols="60">
+<input ref="tags" rows="2" cols="60">
     <label>Type your tags</label>
-</textarea>
+</input>
 ```
 
-Add in your controller if you want autocompletion:
+When initializing the form, retrieve the list of tags and set it to the input:
 
 ```php
-jClasses::getService("jtags~tags")->setResponsesHeaders();
+$form = jForms::create('news', $id_news);
+
+// ...
+
+$srvTags = jClasses::getService("jtags~tags");
+$tags = implode(',', $srvTags->getTagsBySubject('news', $id_news));
+$form->setData('tags', $tags);
 ```
+
+If you want autocompletion, add the class on the widget, into your template:
+
+```
+{ctrl_control 'tags', ["class"=>"jtags-autocomplete"]}
+```
+
+And call `setResponseHeaders()` into your controller:
+
+```php
+$resp = $this->getResponse('html');
+//...
+jClasses::getService("jtags~tags")->setResponsesHeaders($resp);
+```
+
+Saving tags after submitting a form
+-----------------------------------
+
+In the action of submit, retrieve the list of tags, and call `saveTagsBySubject()`
+
+```php
+$id_news = $this->param('id_news');
+$form = jForms::fill('news', $id_news);
+
+// ...
+
+$srvTags = jClasses::getService("jtags~tags");
+$tags = explode(',', $form->getData('tags'));
+
+$srvTags->saveTagsBySubject($tags, 'news', $id_news));
+
+```
+
+
+Displaying the list of tags
+---------------------------
+
+to display the list of tags of a record, call `getTagsBySubject`
+
+```php
+$srvTags = jClasses::getService("jtags~tags");
+$tags = implode(', ', $srvTags->getTagsBySubject('news', $id_news));
+
+$tpl->assign('tags', $tags);
+```
+
 
 Displaying tags cloud
 ---------------------
+
+There is a zone to display a tags cloud.
 
 Into your controller:
 
@@ -71,22 +135,15 @@ or in a template
 - `destination` : the action which will display objects corresponding to a tag. it receive a "tag" parameter.
 - `maxcount` : displays only the given number of tags. Set it to 0 or don't set this parameter to displays all tags.
 
- 
-Getting tags of an object
--------------------------
-
-```php
-$tags = $srv_tags->getTagsByObject($scope, $id);
-```
 
 Getting all objects marked with tags
 ------------------------------------
 
 ```php
 
-$tags = $this->param("tag", false);
-if ($tags) {
+$tag = $this->param("tag", false);
+if ($tag) {
     $srv_tags = jClasses::getService("jtags~tags");
-    $cond->addCondition('sn_id', '=', $srv_tags->getObjectsByTags($tags, "snippet"));
+    $listOfNewsId = $srv_tags->getSubjectsByTags($tag, "news"));
 }
 ```
