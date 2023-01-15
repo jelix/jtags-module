@@ -1,8 +1,8 @@
 {
     "name": "jelix/jtags-module",
     "type": "jelix-module",
-    "description": "Jelix module allowing to display count and list of active users of the application",
-    "keywords": ["admin", "module", "jelix", "statistics","users"],
+    "description": "Module for Jelix allowing to manage tags on records/objects",
+    "keywords": ["module", "jelix", "tags","tags cloud"],
     "license": "LGPL-2.1-only",
     "authors": [
         {
